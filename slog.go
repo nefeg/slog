@@ -1,9 +1,50 @@
 package slog
 
-import "fmt"
+/**
+Methods:
+	Debug(v ...interface{})
+	DebugLn(v ...interface{})
+	DebugF(format string, v ...interface{})
+
+	Info(v ...interface{})
+	InfoLn(v ...interface{})
+	InfoF(format string, v ...interface{})
+
+	Notice(v ...interface{})
+	NoticeLn(v ...interface{})
+	NoticeF(format string, v ...interface{})
+
+	Warn(v ...interface{})
+	WarnLn(v ...interface{})
+	WarnF(format string, v ...interface{})
+
+	Err(v ...interface{})
+	ErrLn(v ...interface{})
+	ErrF(format string, v ...interface{})
+
+	Crit(v ...interface{})
+	CritLn(v ...interface{})
+	CritF(format string, v ...interface{})
+
+Levels:
+	LvlNone     -1
+	LvlAll      0
+	LvlDebug    10
+	LvlInfo     20
+	LvlNotice   30
+	LvlWarn     40
+	LvlError    50
+	LvlCrit     60
+ */
+
+import (
+	"fmt"
+	"time"
+)
 
 var s *slog
 
+var LvlNone     =  Level{"none",   -1}
 var LvlAll      =  Level{"all",    0}
 var LvlDebug    =  Level{"debug",  10}
 var LvlInfo     =  Level{"info",   20}
@@ -21,6 +62,7 @@ var Crit,   CritLn,     CritF   SLogger
 
 type slog struct{
 	CurrentLevel    Level
+	CurrentFormat   Format
 
 	loggers         map[Level][]*SLogger
 }
@@ -30,7 +72,20 @@ type Level struct{
 	Value   int
 }
 
-type SLogger func(data ...interface{})
+type SLogger func(data ...interface{}) interface{}
+
+type Format func() string
+
+
+var FormatDefault = func() string{
+
+	return `%s`
+}
+
+var FormatTimed Format = func() string{
+
+	return fmt.Sprintf(`[%s] %%s`, time.Now().Format(time.RFC822))
+}
 
 
 func init(){
@@ -38,35 +93,44 @@ func init(){
 	s = &slog{}
 	s.loggers = map[Level][]*SLogger{}
 
-	SetLevel( LvlCrit )
+	SetLevel( LvlAll )
+	SetFormat( FormatDefault )
 
-	stdLog      := func(data ...interface{}){ fmt.Print(data...) }
-	stdLogLn    := func(data ...interface{}){ fmt.Println(data...) }
-	stdLogF     := func(data ...interface{}){ fmt.Printf(data[0].(string), data[1:]...) }
+	var stdLog, stdLogLn, stdLogF  SLogger
+	stdLog      = func(data ...interface{}) interface{} { fmt.Printf(s.CurrentFormat(), fmt.Sprint(data...) ) ;return nil}
+	stdLogLn    = func(data ...interface{}) interface{} { fmt.Printf(s.CurrentFormat() +"\n", fmt.Sprint(data...) ) ;return nil}
+	stdLogF     = func(data ...interface{}) interface{} {
+		fmt.Printf(
+			fmt.Sprintf(s.CurrentFormat(), data[0].(string)),
+			fmt.Sprint(data[1:]...),
+		)
+		return nil
+	}
 
-	Bind(&Debug,    LvlDebug,   stdLog,     false )
-	Bind(&DebugLn,  LvlDebug,   stdLogLn,   false )
-	Bind(&DebugF,   LvlDebug,   stdLogF,    false )
 
-	Bind(&Info,     LvlInfo,    stdLog,     false )
-	Bind(&InfoLn,   LvlInfo,    stdLogLn,   false )
-	Bind(&InfoF,    LvlInfo,    stdLogF,    false )
+	Bind(&Debug,    stdLog,     LvlDebug,   false )
+	Bind(&DebugLn,  stdLogLn,   LvlDebug,   false )
+	Bind(&DebugF,   stdLogF,    LvlDebug,   false )
 
-	Bind(&Notice,   LvlNotice,  stdLog,     false )
-	Bind(&NoticeLn, LvlNotice,  stdLogLn,   false )
-	Bind(&NoticeF,  LvlNotice,  stdLogF,    false )
+	Bind(&Info,     stdLog,     LvlInfo,    false )
+	Bind(&InfoLn,   stdLogLn,   LvlInfo,    false )
+	Bind(&InfoF,    stdLogF,    LvlInfo,    false )
 
-	Bind(&Warn,     LvlWarn,    stdLog,     false )
-	Bind(&WarnLn,   LvlWarn,    stdLogLn,   false )
-	Bind(&WarnF,    LvlWarn,    stdLogF,    false )
+	Bind(&Notice,   stdLog,     LvlNotice,  false )
+	Bind(&NoticeLn, stdLogLn,   LvlNotice,  false )
+	Bind(&NoticeF,  stdLogF,    LvlNotice,  false )
 
-	Bind(&Err,      LvlError,   stdLog,     false )
-	Bind(&ErrLn,    LvlError,   stdLogLn,   false )
-	Bind(&ErrF,     LvlError,   stdLogF,    false )
+	Bind(&Warn,     stdLog,     LvlWarn,    false )
+	Bind(&WarnLn,   stdLogLn,   LvlWarn,    false )
+	Bind(&WarnF,    stdLogF,    LvlWarn,    false )
 
-	Bind(&Crit,     LvlCrit,    stdLog,     false )
-	Bind(&CritLn,   LvlCrit,    stdLogLn,   false )
-	Bind(&CritF,    LvlCrit,    stdLogF,    false )
+	Bind(&Err,      stdLog,     LvlError,   false )
+	Bind(&ErrLn,    stdLogLn,   LvlError,   false )
+	Bind(&ErrF,     stdLogF,    LvlError,   false )
+
+	Bind(&Crit,     stdLog,     LvlCrit,    false )
+	Bind(&CritLn,   stdLogLn,   LvlCrit,    false )
+	Bind(&CritF,    stdLogF,    LvlCrit,    false )
 
 	DebugF("[slog] init with level: %s\n", GetLevel().Name)
 }
@@ -75,29 +139,34 @@ func init(){
 //
 // var MyPanicLogger slog.SLogger
 // slog.Bind(&MyPanicLogger, 6, func(data ...interface{}) {log.Panic(data)} )
-func Bind(value *SLogger, level Level, fn func(data ...interface{}), override bool ){
+func Bind(value *SLogger, fn SLogger, level Level, override bool ){
 
-	*value = GetSLogger(level, fn, override)
+	*value = fn
+
+	Wrap(value, level, override)
 }
+
+
 
 // Get custom logger to log-level
 //
 // var MyPanicLogger slog.SLogger = slog.GetSLogger(6, func(data ...interface{}) {log.Panic(data)} )
-func GetSLogger( level Level, fn func(data ...interface{}), override bool  ) (slogger SLogger){
+func Wrap(fn *SLogger, level Level, override bool  ) {
 
 	if override && len(s.loggers[level]) >0{
 		s.loggers[level] = []*SLogger{}
 	}
 
-	slogger = func(data ...interface{}) {
-		if s.CurrentLevel.Value <= level.Value{
-			fn(data...)
+	fnSource := *fn // for avoid circular reference errors
+	*fn = func(data ...interface{}) interface{}{
+		if s.CurrentLevel.Value >= 0 && s.CurrentLevel.Value <= level.Value{
+			return fnSource(data...)
 		}
+
+		return nil
 	}
 
-	s.loggers[level] = append(s.loggers[level], &slogger)
-
-	return slogger
+	s.loggers[level] = append(s.loggers[level], fn)
 }
 
 func SetLevel(level Level){
@@ -118,7 +187,13 @@ func GetLevels() []Level{
 	return levels
 }
 
+func SetFormat(format Format){
+	s.CurrentFormat = format
+}
 
+func GetFormat() Format{
+	return s.CurrentFormat
+}
 
 
 
