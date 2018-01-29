@@ -1,6 +1,8 @@
 package slog
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func ExampleWrap(){
 

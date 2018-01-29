@@ -150,3 +150,21 @@ func TestBind(t *testing.T){
 		t.Fail()
 	}
 }
+
+
+func TestLogPanic(t *testing.T) {
+
+	var panicMsg = "Testing \"logPanic\"... OK \n"
+
+	defer func(){
+		if r := recover(); r == nil{
+			t.Error("The code did not panic while calling slog.Panic()")
+
+		}else if r != panicMsg{
+			t.Error("Unexpected message while calling slog.Panic()")
+		}
+	}()
+
+	SetLevel(LvlNone)
+	Panic(panicMsg)
+}
