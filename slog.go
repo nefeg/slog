@@ -93,7 +93,7 @@ func init(){
 	s = &slog{}
 	s.loggers = map[Level][]*SLogger{}
 
-	SetLevel( LvlAll )
+	SetLevel( LvlNone )
 	SetFormat( FormatDefault )
 
 	var stdLog, stdLogLn, stdLogF  SLogger
