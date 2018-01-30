@@ -1,5 +1,5 @@
 # slog
-[![GoDoc](https://godoc.org/github.com/umbrella-evgeny-nefedkin/slog)](https://godoc.org/github.com/umbrella-evgeny-nefedkin/slog)
+[![GoDoc](https://godoc.org/github.com/umbrella-evgeny-nefedkin/slog?status.svg)](https://godoc.org/github.com/umbrella-evgeny-nefedkin/slog)
 
 Simple logger. Just import and use.
 
