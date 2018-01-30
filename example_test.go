@@ -43,3 +43,13 @@ func ExampleBind(){
 	// some debug data
 	// some info data
 }
+
+func ExampleFormattedLog(){
+
+	SetLevel(LvlInfo)
+	SetFormat(FormatDefault)
+
+	InfoF("One string: %s, two string: %s, three int: %d", "1str", "2str", 3)
+
+	// Output: One string: 1str, two string: 2str, three int: 3
+}

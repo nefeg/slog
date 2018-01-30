@@ -11,9 +11,10 @@ type SLogger func(data ...interface{}) interface{}
 var logStd      SLogger = func(data ...interface{}) interface{} { fmt.Printf(s.CurrentFormat(), fmt.Sprint(data...) ) ;return nil}
 var logStdLn    SLogger = func(data ...interface{}) interface{} { fmt.Printf(s.CurrentFormat() +"\n", fmt.Sprint(data...) ) ;return nil}
 var logStdF     SLogger = func(data ...interface{}) interface{} {
+	f := fmt.Sprintf(s.CurrentFormat(), data[0].(string))
 	fmt.Printf(
-		fmt.Sprintf(s.CurrentFormat(), data[0].(string)),
-		fmt.Sprint(data[1:]...),
+		f,
+		data[1:]...,
 	)
 	return nil
 }
@@ -42,7 +43,7 @@ var logPanicLn  SLogger = func(data ...interface{}) interface{} {
 var logPanicF   SLogger = func(data ...interface{}) interface{} {
 	e := fmt.Sprintf(
 		fmt.Sprintf(s.CurrentFormat(), data[0].(string)),
-		fmt.Sprint(data[1:]...),
+		data[1:]...,
 	)
 
 	fmt.Fprint(os.Stderr, e)
@@ -68,8 +69,8 @@ var logFatalLn  SLogger = func(data ...interface{}) interface{} {
 
 var logFatalF   SLogger = func(data ...interface{}) interface{} {
 	fmt.Fprintf(os.Stderr,
-		fmt.Sprintf(s.CurrentFormat(), data[0].(string)),
-		fmt.Sprint(data[1:]...),
+		fmt.Sprintf(s.CurrentFormat() + data[0].(string)),
+		data[1:]...,
 	)
 	os.Exit(1)
 	return nil
