@@ -1,6 +1,7 @@
 # slog
-Simple logger. Just import and use.
+[![GoDoc](https://godoc.org/github.com/umbrella-evgeny-nefedkin/slog)](https://godoc.org/github.com/umbrella-evgeny-nefedkin/slog)
 
+Simple logger. Just import and use.
 
 Install
 -------
@@ -14,6 +15,8 @@ Import the library and use:
     
     func main(){
         ...
+        slog.SetLevel(slog.LvlAll) // default LvlNone
+        slog.SetFormat(slog.FormatTimmed)
         slog.Info("any info")
         ...
     }
@@ -38,6 +41,7 @@ Custom setting
   *build-in formats*: 
   
         slog.FormatTimed
+        slog.FormatTimed_RFC822
         slog.FormatDefault
 
 
