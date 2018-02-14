@@ -3,35 +3,35 @@ package slog
 /**
 Methods:
 	Debug(v ...interface{})
-	DebugLn(v ...interface{})
-	DebugF(format string, v ...interface{})
+	Debugln(v ...interface{})
+	Debugf(format string, v ...interface{})
 
 	Info(v ...interface{})
-	InfoLn(v ...interface{})
-	InfoF(format string, v ...interface{})
+	Infoln(v ...interface{})
+	Infof(format string, v ...interface{})
 
 	Notice(v ...interface{})
-	NoticeLn(v ...interface{})
-	NoticeF(format string, v ...interface{})
+	Noticeln(v ...interface{})
+	Noticef(format string, v ...interface{})
 
 	Warn(v ...interface{})
-	WarnLn(v ...interface{})
-	WarnF(format string, v ...interface{})
+	Warnln(v ...interface{})
+	Warnf(format string, v ...interface{})
 
 	Err(v ...interface{})
-	ErrLn(v ...interface{})
-	ErrF(format string, v ...interface{})
+	Errln(v ...interface{})
+	Errf(format string, v ...interface{})
 
 	Crit(v ...interface{})
-	CritLn(v ...interface{})
-	CritF(format string, v ...interface{})
+	Critln(v ...interface{})
+	Critf(format string, v ...interface{})
 
 	Fatal(v ...interface{})
-	FatalLn(v ...interface{})
-	FatalF(format string, v ...interface{})
+	Fatalln(v ...interface{})
+	Fatalf(format string, v ...interface{})
 
 	Panic(v ...interface{})
-	PanicLn(v ...interface{})
+	Panicln(v ...interface{})
 	PanicF(format string, v ...interface{})
 
 Levels:
@@ -53,14 +53,14 @@ type slog struct{
 
 var s *slog
 
-var Debug,  DebugLn,    DebugF  SLogger
-var Info,   InfoLn,     InfoF   SLogger
-var Notice, NoticeLn,   NoticeF SLogger
-var Warn,   WarnLn,     WarnF   SLogger
-var Err,    ErrLn,      ErrF    SLogger
-var Crit,   CritLn,     CritF   SLogger
-var Fatal,  FatalLn,    FatalF  SLogger
-var Panic,  PanicLn,    PanicF  SLogger
+var Debug,  Debugln,    Debugf  SLogger
+var Info,   Infoln,     Infof   SLogger
+var Notice, Noticeln,   Noticef SLogger
+var Warn,   Warnln,     Warnf   SLogger
+var Err,    Errln,      Errf    SLogger
+var Crit,   Critln,     Critf   SLogger
+var Fatal,  Fatalln,    Fatalf  SLogger
+var Panic,  Panicln,    Panicf  SLogger
 
 func init(){
 
@@ -71,44 +71,46 @@ func init(){
 	SetFormat( FormatDefault )
 
 	Bind(&Debug,    logStd,     LvlDebug,   false )
-	Bind(&DebugLn,  logStdLn,   LvlDebug,   false )
-	Bind(&DebugF,   logStdF,    LvlDebug,   false )
+	Bind(&Debugln,  logStdLn,   LvlDebug,   false )
+	Bind(&Debugf,   logStdF,    LvlDebug,   false )
 
 	Bind(&Info,     logStd,     LvlInfo,    false )
-	Bind(&InfoLn,   logStdLn,   LvlInfo,    false )
-	Bind(&InfoF,    logStdF,    LvlInfo,    false )
+	Bind(&Infoln,   logStdLn,   LvlInfo,    false )
+	Bind(&Infof,    logStdF,    LvlInfo,    false )
 
 	Bind(&Notice,   logStd,     LvlNotice,  false )
-	Bind(&NoticeLn, logStdLn,   LvlNotice,  false )
-	Bind(&NoticeF,  logStdF,    LvlNotice,  false )
+	Bind(&Noticeln, logStdLn,   LvlNotice,  false )
+	Bind(&Noticef,  logStdF,    LvlNotice,  false )
 
 	Bind(&Warn,     logStd,     LvlWarn,    false )
-	Bind(&WarnLn,   logStdLn,   LvlWarn,    false )
-	Bind(&WarnF,    logStdF,    LvlWarn,    false )
+	Bind(&Warnln,   logStdLn,   LvlWarn,    false )
+	Bind(&Warnf,    logStdF,    LvlWarn,    false )
 
 	Bind(&Err,      logStd,     LvlError,   false )
-	Bind(&ErrLn,    logStdLn,   LvlError,   false )
-	Bind(&ErrF,     logStdF,    LvlError,   false )
+	Bind(&Errln,    logStdLn,   LvlError,   false )
+	Bind(&Errf,     logStdF,    LvlError,   false )
 
 	Bind(&Crit,     logStd,     LvlCrit,    false )
-	Bind(&CritLn,   logStdLn,   LvlCrit,    false )
-	Bind(&CritF,    logStdF,    LvlCrit,    false )
+	Bind(&Critln,   logStdLn,   LvlCrit,    false )
+	Bind(&Critf,    logStdF,    LvlCrit,    false )
 
 	Bind(&Panic,    logPanic,     LvlNone,    false )
-	Bind(&PanicLn,  logPanicLn,   LvlNone,    false )
-	Bind(&PanicF,   logPanicF,    LvlNone,    false )
+	Bind(&Panicln,  logPanicLn,   LvlNone,    false )
+	Bind(&Panicf,   logPanicF,    LvlNone,    false )
 
 	Bind(&Fatal,    logFatal,     LvlNone,    false )
-	Bind(&FatalLn,  logFatalLn,   LvlNone,    false )
-	Bind(&FatalF,   logFatalF,    LvlNone,    false )
+	Bind(&Fatalln,  logFatalLn,   LvlNone,    false )
+	Bind(&Fatalf,   logFatalF,    LvlNone,    false )
 
-	DebugF("[slog] init with level: %s\n", GetLevel().Name)
+	Debugf("[slog] init with level: %s\n", GetLevel().Name)
 }
 
 // Bind custom logger to log-level via reference
 //
 // var MyPanicLogger slog.SLogger
 // slog.Bind(&MyPanicLogger, 6, func(data ...interface{}) {log.Panic(data)} )
+//
+// !if level == LvlNone function will call always
 func Bind(value *SLogger, fn SLogger, level Level, override bool ){
 
 	*value = fn
