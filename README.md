@@ -20,6 +20,36 @@ Import the library and use:
         slog.Info("any info")
         ...
     }
+    
+    
+or if you need show error trace in debug mode only:
+
+    import "github.com/umbrella-evgeny-nefedkin/slog"
+    
+    func main(){
+
+        ...
+        slog.SetLevel(slog.LvlAll) // default LvlNone
+        slog.SetFormat(slog.FormatTimmed)
+
+
+        // main thread will be alive even if goroutine failed
+        // but in debug mode main theread fail too with error trace 
+        go func(){
+            defer func(){
+                if r := recover(); r != nil{
+                    slog.Infoln(r) // will show every time
+                    slog.DebugPanic(r) // will panic if application running in debug mode
+                }
+                return
+            }()
+                        
+            ... some code ...
+        }()
+        
+		....
+
+    }
 
 Custom setting
 --------------

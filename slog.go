@@ -61,6 +61,8 @@ var Err,    Errln,      Errf    SLogger
 var Crit,   Critln,     Critf   SLogger
 var Fatal,  Fatalln,    Fatalf  SLogger
 var Panic,  Panicln,    Panicf  SLogger
+var DebugPanic,  DebugPanicln,    DebugPanicf  SLogger
+
 
 func init(){
 
@@ -101,6 +103,10 @@ func init(){
 	Bind(&Fatal,    logFatal,     LvlNone,    false )
 	Bind(&Fatalln,  logFatalLn,   LvlNone,    false )
 	Bind(&Fatalf,   logFatalF,    LvlNone,    false )
+
+	Bind(&DebugPanic,    logPanic,     LvlDebug,   false )
+	Bind(&DebugPanicln,  logPanicLn,   LvlDebug,   false )
+	Bind(&DebugPanicf,   logPanicF,    LvlDebug,   false )
 
 	Debugf("[slog] init with level: %s\n", GetLevel().Name)
 }
